@@ -2,13 +2,58 @@
 <java version="20.0.1" class="java.beans.XMLDecoder">
  <object class="java.util.concurrent.ConcurrentHashMap">
   <void method="put">
-   <string>bobasfl</string>
+   <string>Martina</string>
    <object class="xyz.anomatver.blps.user.model.User">
     <void property="password">
-     <string>$2a$10$v3VnRdBAguD.lyFh4/.VF.uBlrdG/NdFKhz59OJuJc3iVwy3LE6Aq</string>
+     <string>$2a$10$DktLwl5kj/uaBZkyiMrBleTWWr7kvNxWodfqwF17aIGn.gOvGuK.y</string>
+    </void>
+    <void property="roles">
+     <null/>
     </void>
     <void property="username">
-     <string>bobasfl</string>
+     <string>Martina</string>
+    </void>
+   </object>
+  </void>
+  <void method="put">
+   <string>marafsdtidsgaraidla</string>
+   <object class="xyz.anomatver.blps.user.model.User">
+    <void property="password">
+     <string>$2a$10$DJnBIpgq/YsrhlWNpcalOOzDLKo/EjIz9b4Zc8rvRuvExW2ZA/HNC</string>
+    </void>
+    <void property="roles">
+     <null/>
+    </void>
+    <void property="username">
+     <string>marafsdtidsgaraidla</string>
+    </void>
+   </object>
+  </void>
+  <void method="put">
+   <string>Martin</string>
+   <object class="xyz.anomatver.blps.user.model.User">
+    <void property="password">
+     <string>$2a$10$oe0csxZUClv3qHBb.n7o3eZhCu3H3ZdFDFn31iR9hnYKHcphM4IPm</string>
+    </void>
+    <void property="roles">
+     <null/>
+    </void>
+    <void property="username">
+     <string>Martin</string>
+    </void>
+   </object>
+  </void>
+  <void method="put">
+   <string>Masrtina</string>
+   <object class="xyz.anomatver.blps.user.model.User">
+    <void property="password">
+     <string>$2a$10$i1sw4g5YX6x8H/SqRheyNe3iUu8fprG/ZKe7gQMldXyJcqyyZo/3W</string>
+    </void>
+    <void property="roles">
+     <null/>
+    </void>
+    <void property="username">
+     <string>Masrtina</string>
     </void>
    </object>
   </void>

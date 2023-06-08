@@ -11,5 +11,6 @@ import java.util.List;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findAllByStatus(ReviewStatus status);
+
     List<Review> getReviewsByAuthor(User user);
 }

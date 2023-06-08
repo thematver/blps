@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import xyz.anomatver.blps.auth.dto.JwtAuthenticationException;
 
 import javax.annotation.PostConstruct;
@@ -20,7 +21,7 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private String secret = "gdasjgkl;56;jkl125;l2k3j5JdASTFGKL:$K35 34523";
-    private long validity = 3000;
+    private long validity = 300000000;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -43,29 +44,26 @@ public class JwtTokenProvider {
                 .setExpiration(expiration)
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
-
-
-
     }
-    public Authentication getAuthentication(String token ){
+
+    public Authentication getAuthentication(String token){
         UserDetails user = userDetailsService.loadUserByUsername(getUsername(token));
         return new UsernamePasswordAuthenticationToken(user, "", user.getAuthorities());
     }
     public String resolveToken(HttpServletRequest req) {
         String bearerToken = req.getHeader("Authorization");
-
-        if (bearerToken != null && bearerToken.startsWith("Bearer_")) {
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
-        return null;
+            return null;
     }
+
     public String getUsername(String token){
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
     }
     public boolean validateToken(String token){
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
-
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
             throw new JwtAuthenticationException("JWT token is expired or invalid");

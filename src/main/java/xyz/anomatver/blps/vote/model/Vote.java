@@ -26,10 +26,7 @@ public class Vote {
     private VoteType voteType;
 
     // Each vote is associated with one user
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name="user_id")
     private User user;
-
-    // Each vote is associated with one post
-    @ManyToOne
-    private Review review;
 }

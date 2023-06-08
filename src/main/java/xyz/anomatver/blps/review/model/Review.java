@@ -1,11 +1,15 @@
 package xyz.anomatver.blps.review.model;
 
 import lombok.*;
+import xyz.anomatver.blps.auth.model.ERole;
 import xyz.anomatver.blps.user.model.User;
 import xyz.anomatver.blps.vote.model.Vote;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -26,15 +30,16 @@ public class Review {
     @Column(nullable = false)
     private String content;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name="author_id")
     private User author;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReviewStatus status;
 
-    @OneToMany
-    private List<Vote> votes;
+    @OneToMany(cascade = {CascadeType.ALL})
+    private Set<Vote> votes = new HashSet<Vote>();
 
 
 }

@@ -4,8 +4,10 @@ package xyz.anomatver.blps.auth.service;
 import lombok.Value;
 import java.util.logging.Logger;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,6 +17,7 @@ import xyz.anomatver.blps.user.repository.UserRepository;
 
 
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
@@ -34,20 +37,33 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-        User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+    @Transactional
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found with username or email: "+ usernameOrEmail));
+                        new UsernameNotFoundException("User not found with username: "+ username));
 
         Set<GrantedAuthority> authorities = user
                 .getRoles()
                 .stream()
-                .map((role) -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toSet());
+                .map((role) -> new SimpleGrantedAuthority("ROLE_" + role.toString())).collect(Collectors.toSet());
 
-        return new org.springframework.security.core.userdetails.User(user.getEmail(),
+        return new org.springframework.security.core.userdetails.User(user.getUsername(),
                 user.getPassword(),
                 authorities);
     }
+
+
+    public User getUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getPrincipal() instanceof  UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String login = userDetails.getUsername();
+            User user = userRepository.findByUsername(login).orElseThrow();
+            return user ;
+        }
+        return null;
+     }
 
     String filePath = "users.xml";
 

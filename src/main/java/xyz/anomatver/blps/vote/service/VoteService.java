@@ -1,8 +1,8 @@
 package xyz.anomatver.blps.vote.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import xyz.anomatver.blps.auth.model.Role;
+import xyz.anomatver.blps.auth.model.ERole;
 import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.review.model.ReviewStatus;
 import xyz.anomatver.blps.user.model.User;
@@ -13,25 +13,30 @@ import xyz.anomatver.blps.vote.repository.VoteRepository;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
-@Service
-public class VoteService{
 
-    @Autowired
+@Service
+@AllArgsConstructor
+public class VoteService {
+
     private VoteRepository voteRepository;
 
-    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
     private ReviewRepository reviewRepository;
 
-    @Transactional
-    public Review vote(User moderator, Review review, Vote.VoteType type) {
-            Vote vote = Vote.builder().voteType(type).user(moderator).review(review).build();
-            voteRepository.save(vote);
 
+    public Review vote(User moderator, Review review, Vote.VoteType type) {
+            Vote vote = Vote.builder().voteType(type).user(moderator).build();
+            if (review.getVotes().stream().noneMatch(votes -> Objects.equals(votes.getUser().getId(), moderator.getId()))) {
+                review.getVotes().add(vote);
+                reviewRepository.save(review);
+            }
+            else {
+                return review;
+            }
 
         // Определение статуса рецензии после голосования
 
@@ -45,7 +50,7 @@ public class VoteService{
             negativeVotes +=1;
         }
 
-        int majority = userRepository.countUsersByRolesContains(Role.builder().name("ROLE_MODERATOR").build());
+        int majority = userRepository.countUsersByRolesContains(ERole.MODERATOR);
 
         if (positiveVotes > majority) {
             review.setStatus(ReviewStatus.APPROVED);
@@ -56,8 +61,10 @@ public class VoteService{
         return reviewRepository.save(review);
     }
 
-    public List<Review> findReviewsForModeration() {
-        return reviewRepository.findAllByStatus(ReviewStatus.PENDING);
+    public List<Review> findReviewsForModeration(User user) {
+        return reviewRepository.findAllByStatus(ReviewStatus.PENDING).stream()
+                .filter(review -> review.getVotes().stream()
+                        .noneMatch(vote -> Objects.equals(vote.getUser().getId(), user.getId()))).toList();
     }
 
 }
