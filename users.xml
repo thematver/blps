@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="20.0.1" class="java.beans.XMLDecoder">
+ <object class="java.util.concurrent.ConcurrentHashMap">
+  <void method="put">
+   <string>bobasfl</string>
+   <object class="xyz.anomatver.blps.user.model.User">
+    <void property="password">
+     <string>$2a$10$v3VnRdBAguD.lyFh4/.VF.uBlrdG/NdFKhz59OJuJc3iVwy3LE6Aq</string>
+    </void>
+    <void property="username">
+     <string>bobasfl</string>
+    </void>
+   </object>
+  </void>
+ </object>
+</java>
