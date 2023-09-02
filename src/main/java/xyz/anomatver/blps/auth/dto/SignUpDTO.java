@@ -1,10 +1,14 @@
 package xyz.anomatver.blps.auth.dto;
 
-import lombok.Data;
+import lombok.*;
 
 @Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class SignUpDTO {
-    private String name;
     private String username;
     private String password;
 }

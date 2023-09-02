@@ -1,9 +1,6 @@
 package xyz.anomatver.blps.auth.service;
 
 
-import lombok.Value;
-import java.util.logging.Logger;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,7 +12,6 @@ import org.springframework.stereotype.Service;
 import xyz.anomatver.blps.user.model.User;
 import xyz.anomatver.blps.user.repository.UserRepository;
 
-
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.beans.XMLDecoder;
@@ -25,13 +21,18 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private UserRepository userRepository;
-
+    private final UserRepository userRepository;
+    String filePath = "users.xml";
+    File usersFile;
+    ConcurrentHashMap<String, User> accounts;
+    Lock fileLock;
+    Logger logger = Logger.getGlobal();
     public CustomUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -41,7 +42,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found with username: "+ username));
+                        new UsernameNotFoundException("User not found with username: " + username));
 
         Set<GrantedAuthority> authorities = user
                 .getRoles()
@@ -53,25 +54,15 @@ public class CustomUserDetailsService implements UserDetailsService {
                 authorities);
     }
 
-
     public User getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof  UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        if (authentication.getPrincipal() instanceof UserDetails userDetails) {
             String login = userDetails.getUsername();
             User user = userRepository.findByUsername(login).orElseThrow();
-            return user ;
+            return user;
         }
         return null;
-     }
-
-    String filePath = "users.xml";
-
-    File usersFile;
-    ConcurrentHashMap<String, User> accounts;
-    Lock fileLock;
-
-    Logger logger = Logger.getGlobal();
+    }
 
     @PostConstruct
     private void init() {
@@ -87,8 +78,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         File file = new File(filePath);
         try {
             file.createNewFile();
-        }
-        catch (IOException ex){
+        } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
         this.usersFile = file;
@@ -96,16 +86,17 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
 
-    public void addAccount(User account){
+    public void addAccount(User account) {
         accounts.put(account.getUsername(), account);
         dumpToXml();
     }
 
-    public void addAccount(String username, String password){
+    public void addAccount(String username, String password) {
         accounts.put(username, User.builder().username(username).password(password).build());
         dumpToXml();
     }
-    public User findAccount(String username){
+
+    public User findAccount(String username) {
         return accounts.get(username);
     }
 
@@ -119,17 +110,16 @@ public class CustomUserDetailsService implements UserDetailsService {
             );
             encoder.writeObject(this.accounts);
             encoder.close();
-        }
-        catch (FileNotFoundException ex){
+        } catch (FileNotFoundException ex) {
             throw new RuntimeException(ex);
-        }
-        finally {
+        } finally {
             fileLock.unlock();
         }
 
 
     }
-    private void loadFromXml(){
+
+    private void loadFromXml() {
         try {
             XMLDecoder decoder = new XMLDecoder(
                     new BufferedInputStream(
@@ -138,14 +128,12 @@ public class CustomUserDetailsService implements UserDetailsService {
             );
             try {
                 this.accounts = (ConcurrentHashMap<String, User>) decoder.readObject();
-            }
-            catch (Exception ex){
+            } catch (Exception ex) {
                 logger.warning("Users file corrupted, skipping");
             }
 
             decoder.close();
-        }
-        catch (FileNotFoundException ex){
+        } catch (FileNotFoundException ex) {
             throw new RuntimeException(ex);
         }
     }

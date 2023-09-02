@@ -9,7 +9,6 @@ import javax.sql.DataSource;
 
 @Configuration
 public class DataSourceConfig {
-
     @Bean(name = "dataSource")
     @ConfigurationProperties(prefix = "datasource")
     public DataSource dataSource() {

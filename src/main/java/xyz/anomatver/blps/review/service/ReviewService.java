@@ -2,12 +2,11 @@ package xyz.anomatver.blps.review.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import xyz.anomatver.blps.exception.NotFoundException;
 import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.review.model.ReviewStatus;
-import xyz.anomatver.blps.user.model.User;
-import xyz.anomatver.blps.exception.NotFoundException;
-import xyz.anomatver.blps.vote.service.SpamDetectionService;
 import xyz.anomatver.blps.review.repository.ReviewRepository;
+import xyz.anomatver.blps.vote.service.SpamDetectionService;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -16,10 +15,9 @@ import java.util.List;
 public class ReviewService {
 
     @Autowired
-    private ReviewRepository reviewRepository;
-
-    @Autowired
     private final SpamDetectionService spamDetectionService;
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     public ReviewService(SpamDetectionService spamDetectionService) {
         this.spamDetectionService = spamDetectionService;

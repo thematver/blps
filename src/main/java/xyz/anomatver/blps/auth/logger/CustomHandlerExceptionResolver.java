@@ -15,11 +15,9 @@ public class CustomHandlerExceptionResolver implements HandlerExceptionResolver 
     private static final Logger LOG = LoggerFactory.getLogger(CustomHandlerExceptionResolver.class);
 
     @Override
-    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
-                                         Exception ex) {
+    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         LOG.error("An error occurred while processing the request", ex);
 
-        // Here you can customize your error response
         ModelAndView mav = new ModelAndView();
         mav.addObject("message", "An unexpected error occurred.");
         mav.addObject("error", ex.getMessage());

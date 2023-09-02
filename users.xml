@@ -16,6 +16,20 @@
    </object>
   </void>
   <void method="put">
+   <string>Mafsrtina</string>
+   <object class="xyz.anomatver.blps.user.model.User">
+    <void property="password">
+     <string>$2a$10$A0vTO4qJVzYLdc1Lpo8hmOBEe7a0m7b6AE7MYS51CQTRc8qpambPS</string>
+    </void>
+    <void property="roles">
+     <null/>
+    </void>
+    <void property="username">
+     <string>Mafsrtina</string>
+    </void>
+   </object>
+  </void>
+  <void method="put">
    <string>marafsdtidsgaraidla</string>
    <object class="xyz.anomatver.blps.user.model.User">
     <void property="password">

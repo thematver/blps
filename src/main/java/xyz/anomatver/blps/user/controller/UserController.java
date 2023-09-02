@@ -12,6 +12,8 @@ import xyz.anomatver.blps.user.dto.UserResponse;
 import xyz.anomatver.blps.user.model.User;
 import xyz.anomatver.blps.user.service.UserService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/api/users", produces = "application/json")
 public class UserController {
@@ -19,20 +21,16 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-
-
-
-//    @PostMapping("/permissions/{username}")
-//    public ResponseEntity<Boolean> perms(@PathVariable String username) {
-//        User user = userService.findByUsername(username);
-//        moderatorService.grantRole(user);
-//        return ResponseEntity.ok(true);
-//    }
-
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         User user = userService.findById(id);
-        UserResponse response = UserResponse.builder().username(user.getUsername()).reviews(userService.getApprovedReviews(user)).build();
+        String username = user.getUsername();
+        List<Review> approvedReviews = userService.getApprovedReviews(user);
+        UserResponse response = UserResponse
+                                .builder()
+                                .username(username)
+                                .reviews(approvedReviews)
+                                .build();
 
         return ResponseEntity.ok().body(response);
     }

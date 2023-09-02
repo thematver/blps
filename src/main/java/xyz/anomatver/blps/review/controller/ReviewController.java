@@ -2,15 +2,12 @@ package xyz.anomatver.blps.review.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
 import xyz.anomatver.blps.auth.service.CustomUserDetailsService;
 import xyz.anomatver.blps.review.dto.CreateReviewDTO;
-import xyz.anomatver.blps.review.service.ReviewService;
 import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.review.model.ReviewStatus;
+import xyz.anomatver.blps.review.service.ReviewService;
 import xyz.anomatver.blps.user.model.User;
 
 import java.util.List;
@@ -30,8 +27,8 @@ public class ReviewController {
         User user = userDetailsService.getUser();
         reviewService.submitReview(Review.builder().title(request.getTitle())
                 .content(request.getContent())
-                        .author(user)
-                        .build());
+                .author(user)
+                .build());
         return ResponseEntity.ok("OK");
     }
 
@@ -56,6 +53,7 @@ public class ReviewController {
         Review updatedReview = reviewService.updateReview(id, review);
         return ResponseEntity.ok(updatedReview);
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);

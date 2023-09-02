@@ -1,14 +1,11 @@
 package xyz.anomatver.blps.review.model;
 
 import lombok.*;
-import xyz.anomatver.blps.auth.model.ERole;
 import xyz.anomatver.blps.user.model.User;
 import xyz.anomatver.blps.vote.model.Vote;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -31,7 +28,7 @@ public class Review {
     private String content;
 
     @ManyToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name="author_id")
+    @JoinColumn(name = "author_id")
     private User author;
 
     @Enumerated(EnumType.STRING)

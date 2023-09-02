@@ -5,16 +5,14 @@ import org.springframework.stereotype.Service;
 import xyz.anomatver.blps.auth.model.ERole;
 import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.review.model.ReviewStatus;
-import xyz.anomatver.blps.user.model.User;
 import xyz.anomatver.blps.review.repository.ReviewRepository;
+import xyz.anomatver.blps.user.model.User;
 import xyz.anomatver.blps.user.repository.UserRepository;
 import xyz.anomatver.blps.vote.model.Vote;
 import xyz.anomatver.blps.vote.repository.VoteRepository;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 
 @Service
@@ -29,14 +27,13 @@ public class VoteService {
 
 
     public Review vote(User moderator, Review review, Vote.VoteType type) {
-            Vote vote = Vote.builder().voteType(type).user(moderator).build();
-            if (review.getVotes().stream().noneMatch(votes -> Objects.equals(votes.getUser().getId(), moderator.getId()))) {
-                review.getVotes().add(vote);
-                reviewRepository.save(review);
-            }
-            else {
-                return review;
-            }
+        Vote vote = Vote.builder().voteType(type).user(moderator).build();
+        if (review.getVotes().stream().noneMatch(votes -> Objects.equals(votes.getUser().getId(), moderator.getId()))) {
+            review.getVotes().add(vote);
+            reviewRepository.save(review);
+        } else {
+            return review;
+        }
 
         // Определение статуса рецензии после голосования
 
@@ -47,7 +44,7 @@ public class VoteService {
         if (type == Vote.VoteType.POSITIVE) {
             positiveVotes += 1;
         } else {
-            negativeVotes +=1;
+            negativeVotes += 1;
         }
 
         int majority = userRepository.countUsersByRolesContains(ERole.MODERATOR);

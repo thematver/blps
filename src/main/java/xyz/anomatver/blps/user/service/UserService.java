@@ -21,12 +21,11 @@ public class UserService {
     private ReviewRepository reviewRepository;
 
     public User findById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+        return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found with id: " + id));
     }
 
     public List<Review> getApprovedReviews(User user) {
-         return reviewRepository.getReviewsByAuthor(user).stream().filter(review -> review.getStatus() == ReviewStatus.APPROVED).toList();
+        return reviewRepository.getReviewsByAuthor(user).stream().filter(review -> review.getStatus() == ReviewStatus.APPROVED).toList();
     }
 
     public boolean checkByUsername(String username) {

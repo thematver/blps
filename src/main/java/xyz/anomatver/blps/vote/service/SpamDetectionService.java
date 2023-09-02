@@ -20,10 +20,7 @@ public class SpamDetectionService {
         headers.set("User-Agent", "YourAppName/1.0");
         headers.set("Content-Type", "application/x-www-form-urlencoded");
 
-        String requestBody = "blog=" + akismetBlog
-                + "&user_ip=" + userIP
-                + "&user_agent=" + userAgent
-                + "&comment_content=" + review.getContent();
+        String requestBody = "blog=" + akismetBlog + "&user_ip=" + userIP + "&user_agent=" + userAgent + "&comment_content=" + review.getContent();
 
         HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
 

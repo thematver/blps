@@ -2,8 +2,6 @@ package xyz.anomatver.blps.vote.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-
 import org.springframework.web.bind.annotation.*;
 import xyz.anomatver.blps.auth.service.CustomUserDetailsService;
 import xyz.anomatver.blps.review.model.Review;
