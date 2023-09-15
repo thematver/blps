@@ -64,9 +64,6 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
 
         userRepository.save(user);
-        // assuming you want to persist user details in some service, but consider removing this line if unnecessary
-        // userDetailsService.addAccount(user.getUsername(), user.getPassword());
-
         return jwtTokenRepository.createToken(user.getUsername());
     }
 }

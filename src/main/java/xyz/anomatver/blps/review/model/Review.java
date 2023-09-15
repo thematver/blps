@@ -1,10 +1,12 @@
 package xyz.anomatver.blps.review.model;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import xyz.anomatver.blps.user.model.User;
 import xyz.anomatver.blps.vote.model.Vote;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,6 +39,10 @@ public class Review {
 
     @OneToMany(cascade = {CascadeType.ALL})
     private Set<Vote> votes = new HashSet<Vote>();
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Date created;
 
 
 }

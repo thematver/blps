@@ -1,8 +1,8 @@
 package xyz.anomatver.blps.user.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xyz.anomatver.blps.exception.NotFoundException;
+import xyz.anomatver.blps.mqtt.MessageSenderService;
 import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.review.model.ReviewStatus;
 import xyz.anomatver.blps.review.repository.ReviewRepository;
@@ -14,11 +14,17 @@ import java.util.List;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private ReviewRepository reviewRepository;
+    private final ReviewRepository reviewRepository;
+
+    private final MessageSenderService messageService;
+
+    public UserService(UserRepository userRepository, ReviewRepository reviewRepository, MessageSenderService messageService) {
+        this.userRepository = userRepository;
+        this.reviewRepository = reviewRepository;
+        this.messageService = messageService;
+    }
 
     public User findById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found with id: " + id));
@@ -30,5 +36,10 @@ public class UserService {
 
     public boolean checkByUsername(String username) {
         return userRepository.findByUsername(username).isPresent();
+    }
+
+    public User link(User user, String uuid) {
+        messageService.sendLinkingMessage(String.valueOf(user.getId()), uuid);
+        return user;
     }
 }
