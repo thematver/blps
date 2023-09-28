@@ -12,7 +12,7 @@ import xyz.anomatver.blps.review.model.Review;
 public class SpamDetectionService {
     public boolean isSpam(Review review, String userIP, String userAgent) {
         String akismetApiKey = "162b8b4bb01a";
-        String akismetBlog = "https://yourwebsite.com"; // Replace with your website URL
+        String akismetBlog = "https://yourwebsite.com"; // Replace
 
         String akismetCheckUrl = "https://" + akismetApiKey + ".rest.akismet.com/1.1/comment-check";
 

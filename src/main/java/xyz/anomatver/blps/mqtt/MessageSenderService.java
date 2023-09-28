@@ -11,7 +11,6 @@ public class MessageSenderService {
     String broker = "tcp://185.68.22.157:1883";
     String clientId = "BLPS_Spring";
 
-
     private void sendMessage(String topic, String payload) {
 
         try {

@@ -42,12 +42,6 @@ public class AuthServiceTest {
     @Mock
     private JwtTokenProvider jwtTokenRepository;
 
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);

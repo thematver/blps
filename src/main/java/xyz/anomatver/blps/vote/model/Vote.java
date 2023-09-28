@@ -25,7 +25,6 @@ public class Vote {
     @Enumerated(EnumType.STRING)
     private VoteType voteType;
 
-    // Each vote is associated with one user
     @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name="user_id")
     private User user;
