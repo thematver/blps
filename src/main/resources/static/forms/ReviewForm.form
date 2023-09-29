@@ -1,0 +1,54 @@
+{
+  "components": [
+    {
+      "text": "# Комментировать",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1dgohcx",
+        "columns": null
+      },
+      "id": "Field_06uodfr"
+    },
+    {
+      "label": "Заголовок",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_08e7vf6",
+        "columns": null
+      },
+      "id": "Field_1swwkg5",
+      "key": "review_title"
+    },
+    {
+      "label": "Рецензия",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0vu1zow",
+        "columns": null
+      },
+      "id": "Field_0fan0li",
+      "key": "review_content"
+    },
+    {
+      "action": "submit",
+      "label": "Отправить",
+      "type": "button",
+      "layout": {
+        "row": "Row_0mn2x2f",
+        "columns": null
+      },
+      "id": "Field_0dkldwa",
+      "key": "field_1qphwp4"
+    }
+  ],
+  "type": "default",
+  "id": "Review_Form",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.15.1"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.19.0",
+  "schemaVersion": 10
+}

@@ -1,0 +1,66 @@
+{
+  "components": [
+    {
+      "text": "# Голосование\n",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1gt1feh",
+        "columns": null
+      },
+      "id": "Field_0s113vf"
+    },
+    {
+      "label": "Рецензия",
+      "type": "select",
+      "layout": {
+        "row": "Row_1n5qwud",
+        "columns": null
+      },
+      "id": "Field_1um4836",
+      "key": "selected_review",
+      "valuesKey": "reviews_form_input"
+    },
+    {
+      "values": [
+        {
+          "label": "За",
+          "value": "true"
+        },
+        {
+          "label": "Против",
+          "value": "false"
+        }
+      ],
+      "label": "Голос",
+      "type": "radio",
+      "layout": {
+        "row": "Row_0na6mzc",
+        "columns": null
+      },
+      "id": "Field_0ev0qt6",
+      "key": "vote_type",
+      "defaultValue": "true"
+    },
+    {
+      "action": "submit",
+      "label": "Голосовать",
+      "type": "button",
+      "layout": {
+        "row": "Row_1rpsw9i",
+        "columns": 5
+      },
+      "id": "Field_13i5glu",
+      "key": "field_0wyifxy"
+    }
+  ],
+  "type": "default",
+  "id": "VoteForm",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.15.1"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.19.0",
+  "schemaVersion": 10
+}

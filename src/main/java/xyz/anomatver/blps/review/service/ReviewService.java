@@ -30,9 +30,18 @@ public class ReviewService {
 
     @Transactional
     public Review submitReview(Review review) {
-        validateReviewContent(review);
-        setReviewStatusBasedOnSpamDetection(review);
+        validate(review);
+        checkForSpam(review);
         return reviewRepository.save(review);
+    }
+
+    public boolean validate(Review review)   {
+        return validateReviewContent(review);
+    }
+
+
+    public long save(Review review) {
+        return reviewRepository.save(review).getId();
     }
 
     public Review findById(Long id) {
@@ -65,18 +74,17 @@ public class ReviewService {
         return reviewRepository.findAllReviewsFromYesterday(todayDate, yesterdayDate);
     }
 
-    private void validateReviewContent(Review review) {
-        if (review.getContent() == null || review.getContent().trim().isEmpty()) {
-            throw new IllegalArgumentException("Review content cannot be empty");
-        }
+    private boolean validateReviewContent(Review review) {
+        return review.getContent() != null && !review.getContent().trim().isEmpty();
     }
 
-    private void setReviewStatusBasedOnSpamDetection(Review review) {
-        if (spamDetectionService.isSpam(review, "test", "test")) {
-            review.setStatus(ReviewStatus.PENDING);
-        } else {
-            review.setStatus(ReviewStatus.APPROVED);
-        }
+    public boolean checkForSpam(Review review) {
+        return spamDetectionService.isSpam(review, "test", "test");
+    }
+
+    public void setStatus(ReviewStatus status, Review review) {
+        review.setStatus(status);
+        updateReview(review.getId(), review);
     }
 
     private void updateReviewContentAndStatus(Review existingReview, Review updatedReview) {

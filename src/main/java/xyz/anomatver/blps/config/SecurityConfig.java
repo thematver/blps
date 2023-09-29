@@ -29,8 +29,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
+                .antMatchers("/camunda/**").permitAll()
+                .antMatchers("/forms/**").permitAll()
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/reviews/**").hasAnyRole("USER", "MODERATOR", "ADMIN")
                 .antMatchers("/api/users/**").hasAnyRole("MODERATOR", "ADMIN")

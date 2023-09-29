@@ -1,6 +1,9 @@
 package xyz.anomatver.blps.auth.service;
 
 
+import org.camunda.bpm.engine.IdentityService;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

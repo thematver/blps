@@ -7,6 +7,7 @@ import xyz.anomatver.blps.mqtt.MessageSenderService;
 import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.review.model.ReviewStatus;
 import xyz.anomatver.blps.review.repository.ReviewRepository;
+import xyz.anomatver.blps.review.service.ReviewService;
 import xyz.anomatver.blps.user.model.User;
 import xyz.anomatver.blps.user.repository.UserRepository;
 import xyz.anomatver.blps.vote.model.Vote;
@@ -14,6 +15,7 @@ import xyz.anomatver.blps.vote.repository.VoteRepository;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ public class VoteService {
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
     private final MessageSenderService messageSenderService;
+    private final ReviewService reviewService;
 
     public Review vote(User moderator, Review review, Vote.VoteType type) {
         addVoteIfNotPresent(moderator, review, type);
@@ -31,6 +34,34 @@ public class VoteService {
 
         return reviewRepository.save(review);
     }
+
+    public void vote(User moderator, Long reviewId, Vote.VoteType type) {
+
+       Review review = reviewService.findById(reviewId);
+       addVoteIfNotPresent(moderator, review, type);
+       reviewRepository.save(review);
+
+    }
+
+
+    public boolean shouldSkipDecision(Long reviewId) {
+        long totalVotes = reviewService.findById(reviewId).getVotes().size();
+        long majority = userRepository.countUsersByRolesContains(ERole.MODERATOR);
+        return totalVotes < majority / 2;
+    }
+
+    public boolean hasTotalMajorityOfVotes(Long reviewId) {
+        Review review = reviewService.findById(reviewId);
+        long totalVotes = review.getVotes().size();
+        long positiveVotes = review.getVotes().stream().filter(vote -> vote.getVoteType() == Vote.VoteType.POSITIVE).count();
+        long negativeVotes = totalVotes - positiveVotes;
+
+        long majority = userRepository.countUsersByRolesContains(ERole.MODERATOR);
+
+        return positiveVotes >= majority / 2;
+    }
+
+
 
     public List<Review> findReviewsForModeration(User user) {
         return reviewRepository.findAllByStatus(ReviewStatus.PENDING).stream()
