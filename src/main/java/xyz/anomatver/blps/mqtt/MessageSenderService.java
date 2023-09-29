@@ -8,7 +8,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 @Service
 public class MessageSenderService {
 
-    String broker = "tcp://185.68.22.157:1883";
+    String broker = "tcp://92.63.176.162:1883";
     String clientId = "BLPS_Spring";
 
     private void sendMessage(String topic, String payload) {
@@ -17,8 +17,8 @@ public class MessageSenderService {
             MqttClient sampleClient = new MqttClient(broker, clientId);
 
             MqttConnectOptions connOpts = new MqttConnectOptions();
-            connOpts.setUserName("superuser");
-            connOpts.setPassword("suchsecretomg".toCharArray());
+            connOpts.setUserName("rmuser");
+            connOpts.setPassword("rmpassword".toCharArray());
 
             connOpts.setCleanSession(true);
 

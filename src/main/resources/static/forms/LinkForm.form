@@ -1,0 +1,44 @@
+{
+  "components": [
+    {
+      "text": "# Введите код из Телеграм-бота",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1jxd1cn",
+        "columns": null
+      },
+      "id": "Field_18nr7lc"
+    },
+    {
+      "label": "Код",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1yigzjl",
+        "columns": null
+      },
+      "id": "Field_0dia50e",
+      "key": "telegram_code"
+    },
+    {
+      "action": "submit",
+      "label": "Отправить",
+      "type": "button",
+      "layout": {
+        "row": "Row_14kdrph",
+        "columns": null
+      },
+      "id": "Field_1eag9ht",
+      "key": "field_0bf32il"
+    }
+  ],
+  "type": "default",
+  "id": "LinkForm",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.15.1"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.19.0",
+  "schemaVersion": 10
+}

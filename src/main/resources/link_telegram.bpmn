@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_07fwayt" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.15.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.19.0">
+  <bpmn:process id="LinkTelegram" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0tj7fh8</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Activity_13mscoo" name="Заполнить activation_token из Телеграм" camunda:formKey="camunda-forms:/forms/LinkForm.form">
+      <bpmn:incoming>Flow_0tj7fh8</bpmn:incoming>
+      <bpmn:outgoing>Flow_0zd89f6</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0tj7fh8" sourceRef="StartEvent_1" targetRef="Activity_13mscoo" />
+    <bpmn:serviceTask id="Activity_04tpl14" name="Связать Spring с Telegram" camunda:delegateExpression="#{linkTelegramProcess}">
+      <bpmn:incoming>Flow_0zd89f6</bpmn:incoming>
+      <bpmn:outgoing>Flow_00bjx68</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0zd89f6" sourceRef="Activity_13mscoo" targetRef="Activity_04tpl14" />
+    <bpmn:endEvent id="Event_1b7qvrq">
+      <bpmn:incoming>Flow_00bjx68</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_00bjx68" sourceRef="Activity_04tpl14" targetRef="Event_1b7qvrq" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="LinkTelegram">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_13mscoo_di" bpmnElement="Activity_13mscoo">
+        <dc:Bounds x="270" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1b7qvrq_di" bpmnElement="Event_1b7qvrq">
+        <dc:Bounds x="592" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_04tpl14_di" bpmnElement="Activity_04tpl14">
+        <dc:Bounds x="431" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0tj7fh8_di" bpmnElement="Flow_0tj7fh8">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="270" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0zd89f6_di" bpmnElement="Flow_0zd89f6">
+        <di:waypoint x="370" y="117" />
+        <di:waypoint x="431" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00bjx68_di" bpmnElement="Flow_00bjx68">
+        <di:waypoint x="531" y="117" />
+        <di:waypoint x="592" y="117" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
