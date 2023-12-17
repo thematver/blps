@@ -1,6 +1,8 @@
 package xyz.anomatver.blps.vote.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import xyz.anomatver.blps.auth.model.ERole;
 import xyz.anomatver.blps.mqtt.MessageSenderService;
@@ -20,7 +22,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class VoteService {
-
+    private static final Logger logger = LoggerFactory.getLogger(VoteService.class);
     private final VoteRepository voteRepository;
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
@@ -28,18 +30,27 @@ public class VoteService {
     private final ReviewService reviewService;
 
     public Review vote(User moderator, Review review, Vote.VoteType type) {
-        addVoteIfNotPresent(moderator, review, type);
+        try {
+            addVoteIfNotPresent(moderator, review, type);
 
-        determineReviewStatus(review, type);
+            determineReviewStatus(review, type);
 
-        return reviewRepository.save(review);
+            return reviewRepository.save(review);
+        } catch (Exception ex) {
+            logger.error("Error while processing vote: {}", ex.getMessage());
+            throw ex;
+        }
     }
 
     public void vote(User moderator, Long reviewId, Vote.VoteType type) {
-
-       Review review = reviewService.findById(reviewId);
-       addVoteIfNotPresent(moderator, review, type);
-       reviewRepository.save(review);
+        try {
+            Review review = reviewService.findById(reviewId);
+            addVoteIfNotPresent(moderator, review, type);
+            reviewRepository.save(review);
+        }  catch (Exception ex) {
+            logger.error("Error while voting for a review: {}", ex.getMessage());
+            throw ex;
+        }
 
     }
 
@@ -70,31 +81,46 @@ public class VoteService {
     }
 
     private void addVoteIfNotPresent(User moderator, Review review, Vote.VoteType type) {
-        if (review.getVotes().stream().noneMatch(vote -> Objects.equals(vote.getUser().getId(), moderator.getId()))) {
-            Vote vote = Vote.builder().voteType(type).user(moderator).build();
-            review.getVotes().add(vote);
-            reviewRepository.save(review);
+        try {
+            if (review.getVotes().stream().noneMatch(vote -> Objects.equals(vote.getUser().getId(), moderator.getId()))) {
+                Vote vote = Vote.builder().voteType(type).user(moderator).build();
+                review.getVotes().add(vote);
+                reviewRepository.save(review);
+            }
+        }  catch (Exception ex) {
+            logger.error("Error while adding vote: {}", ex.getMessage());
+            throw ex;
         }
     }
 
     private void determineReviewStatus(Review review, Vote.VoteType type) {
-        long totalVotes = review.getVotes().size();
-        long positiveVotes = review.getVotes().stream().filter(vote -> vote.getVoteType() == Vote.VoteType.POSITIVE).count();
-        long negativeVotes = totalVotes - positiveVotes;
+        try {
+            long totalVotes = review.getVotes().size();
+            long positiveVotes = review.getVotes().stream().filter(vote -> vote.getVoteType() == Vote.VoteType.POSITIVE).count();
+            long negativeVotes = totalVotes - positiveVotes;
 
-        if (type == Vote.VoteType.POSITIVE) positiveVotes++;
-        else negativeVotes++;
+            if (type == Vote.VoteType.POSITIVE) positiveVotes++;
+            else negativeVotes++;
 
-        long majority = userRepository.countUsersByRolesContains(ERole.MODERATOR);
+            long majority = userRepository.countUsersByRolesContains(ERole.MODERATOR);
 
-        if (positiveVotes > majority) {
-            review.setStatus(ReviewStatus.APPROVED);
-        } else if (negativeVotes > majority) {
-            review.setStatus(ReviewStatus.REJECTED);
+            if (positiveVotes > majority) {
+                review.setStatus(ReviewStatus.APPROVED);
+            } else if (negativeVotes > majority) {
+                review.setStatus(ReviewStatus.REJECTED);
+            }
+        } catch (Exception ex) {
+            logger.error("Error while determining review status: {}", ex.getMessage());
+            throw ex;
         }
     }
 
     private boolean hasNotVoted(Review review, User user) {
-        return review.getVotes().stream().noneMatch(vote -> Objects.equals(vote.getUser().getId(), user.getId()));
+        try {
+            return review.getVotes().stream().noneMatch(vote -> Objects.equals(vote.getUser().getId(), user.getId()));
+        } catch (Exception ex) {
+            logger.error("Error while checking if user has voted: {}", ex.getMessage());
+            throw ex;
+        }
     }
 }

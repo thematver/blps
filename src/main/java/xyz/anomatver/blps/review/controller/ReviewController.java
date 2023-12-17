@@ -1,5 +1,7 @@
 package xyz.anomatver.blps.review.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +16,15 @@ import xyz.anomatver.blps.review.service.ReviewService;
 import xyz.anomatver.blps.user.model.User;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ReviewController.class);
 
     private final ReviewService reviewService;
     private final CustomUserDetailsService userDetailsService;
@@ -44,28 +49,40 @@ public class ReviewController {
                     .author(user)
                     .build();
             reviewService.submitReview(review, userIp, userAgent);
+            logger.info("Review submitted successfully");
             return new ResponseEntity<>("Review submitted successfully", HttpStatus.CREATED);
         } catch (Exception ex) {
+            logger.error("Failed to submit review: {}", ex.getMessage());
             return new ResponseEntity<>("Failed to submit review", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getReviewById(@PathVariable Long id) {
+        try {
         Review review = reviewService.findById(id);
         if (review != null) {
             return new ResponseEntity<>(review, HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Review not found", HttpStatus.NOT_FOUND);
         }
+        } catch (Exception ex) {
+            logger.error("Error occurred while fetching review: {}", ex.getMessage());
+            return new ResponseEntity<>("Error occurred while fetching review", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping
     public ResponseEntity<List<Review>> getAllReviews() {
-        List<Review> reviews = reviewService.findAll().stream()
-                .filter(review -> review.getStatus() == ReviewStatus.APPROVED)
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(reviews, HttpStatus.OK);
+        try {
+            List<Review> reviews = reviewService.findAll().stream()
+                    .filter(review -> review.getStatus() == ReviewStatus.APPROVED)
+                    .collect(Collectors.toList());
+            return new ResponseEntity<>(reviews, HttpStatus.OK);
+        } catch (Exception ex) {
+        logger.error("Error occurred while fetching reviews: {}", ex.getMessage());
+        return new ResponseEntity("Error occurred while fetching reviews", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     }
 
     @PutMapping("/{id}")
@@ -74,6 +91,7 @@ public class ReviewController {
             Review updatedReview = reviewService.updateReview(id, reviewDTO);
             return new ResponseEntity<>(updatedReview, HttpStatus.OK);
         } catch (Exception ex) {
+            logger.error("Failed to update review: {}", ex.getMessage());
             return new ResponseEntity<>("Failed to update review", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -84,6 +102,7 @@ public class ReviewController {
             reviewService.deleteReview(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception ex) {
+            logger.error("Failed to delete review: {}", ex.getMessage());
             return new ResponseEntity<>("Failed to delete review", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

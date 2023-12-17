@@ -1,5 +1,7 @@
 package xyz.anomatver.blps.review.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import xyz.anomatver.blps.exception.NotFoundException;
 import xyz.anomatver.blps.mqtt.MessageSenderService;
@@ -16,7 +18,7 @@ import java.util.List;
 
 @Service
 public class ReviewService {
-
+    private static final Logger logger = LoggerFactory.getLogger(ReviewService.class);
     private final SpamDetectionService spamDetectionService;
     private final ReviewRepository reviewRepository;
 
@@ -30,18 +32,33 @@ public class ReviewService {
 
     @Transactional
     public Review submitReview(Review review, String userIp, String userAgent) {
-        validate(review);
-        checkForSpam(review, userIp, userAgent);
-        return reviewRepository.save(review);
+        try {
+            validate(review);
+            checkForSpam(review, userIp, userAgent);
+            return reviewRepository.save(review);
+        } catch (Exception ex) {
+            logger.error("Failed to submit review: {}", ex.getMessage());
+            throw ex;
+        }
     }
 
     public boolean validate(Review review)   {
-        return validateReviewContent(review);
+        try {
+            return validateReviewContent(review);
+        } catch (Exception ex) {
+            logger.error("Error while validating review: {}", ex.getMessage());
+            throw ex;
+        }
     }
 
 
     public long save(Review review) {
-        return reviewRepository.save(review).getId();
+        try {
+            return reviewRepository.save(review).getId();
+        } catch (Exception ex) {
+            logger.error("Error while saving review: {}", ex.getMessage());
+            throw ex;
+        }
     }
 
     public Review findById(Long id) {
@@ -83,8 +100,13 @@ public class ReviewService {
     }
 
     public void setStatus(ReviewStatus status, Review review) {
-        review.setStatus(status);
-        updateReview(review.getId(), review);
+        try {
+            review.setStatus(status);
+            updateReview(review.getId(), review);
+        } catch (Exception ex) {
+            logger.error("Error while setting status of review: {}", ex.getMessage());
+            throw ex;
+        }
     }
 
     private void updateReviewContentAndStatus(Review existingReview, Review updatedReview) {

@@ -5,7 +5,8 @@ import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.identity.Group;
-import org.jboss.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,6 +37,8 @@ public class AuthService {
 
     private final CustomUserDetailsService customUserDetailsService;
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+
     public AuthService(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, CustomUserDetailsService customUserDetailsService) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenRepository = jwtTokenRepository;
@@ -50,7 +53,7 @@ public class AuthService {
             authenticate(loginDto);
             return jwtTokenRepository.createToken(loginDto.getUsername());
         } catch (BadCredentialsException e) {
-            Logger.getLogger("Авторизация").warn("Неверные данные при входе: " + loginDto.getUsername());
+            logger.warn("Invalid credentials during login attempt for user: {}", loginDto.getUsername());
             return null;
         }
     }
@@ -75,6 +78,7 @@ public class AuthService {
     @Transactional
     public String register(SignUpDTO signUpDto) {
         if (userRepository.existsByUsername(signUpDto.getUsername())) {
+            logger.warn("Username '{}' is already taken.", signUpDto.getUsername());
             throw new UsernameAlreadyTakenException("Выбранное имя пользователя уже занято.");
         }
 
@@ -100,7 +104,9 @@ public class AuthService {
             Group group = service.createGroupQuery().groupName(role.toString()).singleResult();
             try {
                 service.createMembership(user.getUsername(), group.getId());
-            } catch (Exception ignored) {}
+            } catch (Exception e) {
+                logger.error("Error occurred during user registration: {}", e.getMessage());
+            }
         }
 
         return jwtTokenRepository.createToken(user.getUsername());

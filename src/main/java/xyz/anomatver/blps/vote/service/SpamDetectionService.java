@@ -1,5 +1,7 @@
 package xyz.anomatver.blps.vote.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,22 +20,27 @@ public class SpamDetectionService {
     @Value("${server.url}")
     String blogUrl;
 
-
+    private static final Logger logger = LoggerFactory.getLogger(SpamDetectionService.class);
 
     public boolean isSpam(Review review, String userIP, String userAgent) {
-        String akismetUrl = "https://" + apiKey + ".rest.akismet.com/1.1/comment-check";
+        try {
+            String akismetUrl = "https://" + apiKey + ".rest.akismet.com/1.1/comment-check";
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", "BLPS/1.0");
-        headers.set("Content-Type", "application/x-www-form-urlencoded");
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("User-Agent", "BLPS/1.0");
+            headers.set("Content-Type", "application/x-www-form-urlencoded");
 
-        String requestBody = "blog=" + blogUrl + "&user_ip=" + userIP + "&user_agent=" + userAgent + "&comment_content=" + review.getContent();
+            String requestBody = "blog=" + blogUrl + "&user_ip=" + userIP + "&user_agent=" + userAgent + "&comment_content=" + review.getContent();
 
-        HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+            HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(akismetUrl, HttpMethod.POST, entity, String.class);
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.exchange(akismetUrl, HttpMethod.POST, entity, String.class);
 
-        return "true".equalsIgnoreCase(response.getBody());
+            return "true".equalsIgnoreCase(response.getBody());
+        } catch (Exception ex) {
+            logger.error("Error while checking for spam: {}", ex.getMessage());
+            throw ex;
+        }
     }
 }

@@ -1,5 +1,7 @@
 package xyz.anomatver.blps.user.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import xyz.anomatver.blps.exception.NotFoundException;
 import xyz.anomatver.blps.mqtt.MessageSenderService;
@@ -14,6 +16,7 @@ import java.util.List;
 @Service
 public class UserService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
 
     private final ReviewRepository reviewRepository;
@@ -27,19 +30,39 @@ public class UserService {
     }
 
     public User findById(Long id) {
+        try {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+        } catch (Exception ex) {
+            logger.error("Error while finding user by ID: {}", ex.getMessage());
+            throw ex;
+        }
     }
 
     public List<Review> getApprovedReviews(User user) {
-        return reviewRepository.getReviewsByAuthor(user).stream().filter(review -> review.getStatus() == ReviewStatus.APPROVED).toList();
+        try {
+            return reviewRepository.getReviewsByAuthor(user).stream().filter(review -> review.getStatus() == ReviewStatus.APPROVED).toList();
+        } catch (Exception ex) {
+            logger.error("Error while fetching approved reviews: {}", ex.getMessage());
+            throw ex;
+        }
     }
 
     public boolean checkByUsername(String username) {
-        return userRepository.findByUsername(username).isPresent();
+        try {
+            return userRepository.findByUsername(username).isPresent();
+        } catch (Exception ex) {
+            logger.error("Error while checking user by username: {}", ex.getMessage());
+            throw ex;
+        }
     }
 
     public User link(User user, String uuid) {
-        messageService.sendLinkingMessage(String.valueOf(user.getId()), uuid);
-        return user;
+        try {
+            messageService.sendLinkingMessage(String.valueOf(user.getId()), uuid);
+            return user;
+        }  catch (Exception ex) {
+            logger.error("Error while linking user: {}", ex.getMessage());
+            throw ex;
+        }
     }
 }

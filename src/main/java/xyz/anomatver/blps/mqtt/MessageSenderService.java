@@ -1,5 +1,7 @@
 package xyz.anomatver.blps.mqtt;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -8,7 +10,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 @Service
 public class MessageSenderService {
-
+    private static final Logger logger = LoggerFactory.getLogger(MessageSenderService.class);
     @Value("${BROKER_URL}")
     String brokerUrl;
 
@@ -45,6 +47,7 @@ public class MessageSenderService {
 
             sampleClient.disconnect();
         } catch (MqttException me) {
+            logger.error("Error occurred while sending MQTT message: {}", me.getMessage());
             throw new RuntimeException(me);
         }
     }
