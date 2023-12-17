@@ -13,7 +13,7 @@ import xyz.anomatver.blps.vote.service.VoteService;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/vote", produces = "application/json")
+@RequestMapping(value = "/vote", produces = "application/json")
 public class VoteController {
 
     @Autowired

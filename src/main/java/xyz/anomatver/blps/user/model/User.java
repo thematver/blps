@@ -1,9 +1,6 @@
 package xyz.anomatver.blps.user.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import xyz.anomatver.blps.auth.model.ERole;
 
 import javax.persistence.*;
@@ -16,6 +13,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Table(name = "users")
 public class User {
 

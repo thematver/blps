@@ -24,6 +24,6 @@ public class SpamDetectionProcess extends AuthJavaDelegate {
         super.execute(execution);
         long reviewId = (Long) execution.getVariable("reviewId");
         Review review = reviewService.findById(reviewId);
-        execution.setVariable("result", reviewService.checkForSpam(review));
+        execution.setVariable("result", reviewService.checkForSpam(review, "0.0.0.0", "Camunda/1.0"));
     }
 }

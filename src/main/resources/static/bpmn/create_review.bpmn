@@ -5,7 +5,7 @@
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_1vei4st</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:userTask id="Activity_0jykxt1" name="Заполнить рецензию" camunda:formKey="camunda-forms:/forms/ReviewForm.form">
+    <bpmn:userTask id="Activity_0jykxt1" name="Заполнить рецензию" camunda:formKey="camunda-forms:/../forms/ReviewForm.form">
       <bpmn:incoming>Flow_1vei4st</bpmn:incoming>
       <bpmn:outgoing>Flow_0ixe86w</bpmn:outgoing>
     </bpmn:userTask>

@@ -92,7 +92,7 @@ public class AuthService {
             camundaUser.setId(user.getUsername());
             camundaUser.setFirstName(signUpDto.getUsername());
             camundaUser.setPassword(signUpDto.getPassword());
-            camundaUser.setLastName("springovich");
+            camundaUser.setLastName("Spring"); // Needed for Camunda Auth to work
             service.saveUser(camundaUser);
         }
 

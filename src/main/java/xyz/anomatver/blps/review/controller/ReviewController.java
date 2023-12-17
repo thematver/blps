@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import xyz.anomatver.blps.auth.service.CustomUserDetailsService;
 import xyz.anomatver.blps.review.dto.CreateReviewDTO;
 import xyz.anomatver.blps.review.model.Review;
@@ -11,11 +13,12 @@ import xyz.anomatver.blps.review.model.ReviewStatus;
 import xyz.anomatver.blps.review.service.ReviewService;
 import xyz.anomatver.blps.user.model.User;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/reviews")
+@RequestMapping("/reviews")
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -28,15 +31,19 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createReview(@RequestBody CreateReviewDTO request) {
+    public ResponseEntity<?> createReview(@RequestBody CreateReviewDTO body) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String userIp = request.getRemoteAddr();
+        String userAgent = request.getHeader("User-Agent");
+
         try {
             User user = userDetailsService.getUser();
             Review review = Review.builder()
-                    .title(request.getTitle())
-                    .content(request.getContent())
+                    .title(body.getTitle())
+                    .content(body.getContent())
                     .author(user)
                     .build();
-            reviewService.submitReview(review);
+            reviewService.submitReview(review, userIp, userAgent);
             return new ResponseEntity<>("Review submitted successfully", HttpStatus.CREATED);
         } catch (Exception ex) {
             return new ResponseEntity<>("Failed to submit review", HttpStatus.INTERNAL_SERVER_ERROR);

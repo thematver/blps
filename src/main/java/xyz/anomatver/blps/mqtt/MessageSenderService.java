@@ -1,5 +1,6 @@
 package xyz.anomatver.blps.mqtt;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -8,17 +9,31 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 @Service
 public class MessageSenderService {
 
-    String broker = "tcp://92.63.176.162:1883";
+    @Value("${BROKER_URL}")
+    String brokerUrl;
+
     String clientId = "BLPS_Spring";
+
+    @Value("${MQTT_USERNAME}")
+    String mqttUsername;
+
+    @Value("${MQTT_PASSWORD}")
+    String mqttPassword;
+
+    @Value("${mqtt.linking.topic}")
+    String linkingTopic;
+
+    @Value("${mqtt.notification.topic}")
+    String notificationTopic;
 
     private void sendMessage(String topic, String payload) {
 
         try {
-            MqttClient sampleClient = new MqttClient(broker, clientId);
+            MqttClient sampleClient = new MqttClient(brokerUrl, clientId);
 
             MqttConnectOptions connOpts = new MqttConnectOptions();
-            connOpts.setUserName("rmuser");
-            connOpts.setPassword("rmpassword".toCharArray());
+            connOpts.setUserName(mqttUsername);
+            connOpts.setPassword(mqttPassword.toCharArray());
 
             connOpts.setCleanSession(true);
 
@@ -35,11 +50,11 @@ public class MessageSenderService {
     }
 
     public void sendLinkingMessage(String userId, String uuid) {
-        sendMessage("linking", userId + ": "  + uuid);
+        sendMessage(linkingTopic, userId + ": "  + uuid);
     }
 
     public void sendYesterdayNotificationMessage(String payload) {
-        sendMessage("notification", payload);
+        sendMessage(notificationTopic, payload);
     }
 
 

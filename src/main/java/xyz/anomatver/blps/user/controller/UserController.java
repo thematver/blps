@@ -12,7 +12,7 @@ import xyz.anomatver.blps.user.service.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/users", produces = "application/json")
+@RequestMapping(value = "/users", produces = "application/json")
 public class UserController {
 
     private final UserService userService;

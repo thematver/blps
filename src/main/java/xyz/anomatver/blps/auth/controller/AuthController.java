@@ -14,7 +14,7 @@ import xyz.anomatver.blps.auth.exceptions.UsernameAlreadyTakenException;
 import xyz.anomatver.blps.auth.service.AuthService;
 
 @RestController
-@RequestMapping(value = "/api/auth", produces = "application/json")
+@RequestMapping(value = "/auth", produces = "application/json")
 public class AuthController {
 
     private final AuthService authService;

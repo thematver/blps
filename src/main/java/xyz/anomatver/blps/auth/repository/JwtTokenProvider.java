@@ -2,6 +2,7 @@ package xyz.anomatver.blps.auth.repository;
 
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,7 +22,8 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final long validity = 300000000;
-    private String secret = "gdasjgkl;56;jkl125;l2k3j5JdASTFGKL:$K35 34523";
+    @Value("${JWT_SECRET}")
+    private String secret;
     @Autowired
     private UserDetailsService userDetailsService;
 

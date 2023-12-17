@@ -4,7 +4,7 @@
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_1xdfu8u</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:userTask id="Activity_12jl5er" name="Поставить оценку ревью" camunda:formKey="camunda-forms:/forms/VoteForm.form">
+    <bpmn:userTask id="Activity_12jl5er" name="Поставить оценку ревью" camunda:formKey="camunda-forms:/../forms/VoteForm.form">
       <bpmn:extensionElements>
         <camunda:inputOutput>
           <camunda:inputParameter name="reviews_form_input">${JSON(execution.getVariable("reviews_form_input"))}</camunda:inputParameter>

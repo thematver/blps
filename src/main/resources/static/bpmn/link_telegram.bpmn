@@ -4,7 +4,7 @@
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_0tj7fh8</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:userTask id="Activity_13mscoo" name="Заполнить activation_token из Телеграм" camunda:formKey="camunda-forms:/forms/LinkForm.form">
+    <bpmn:userTask id="Activity_13mscoo" name="Заполнить activation_token из Телеграм" camunda:formKey="camunda-forms:/../forms/LinkForm.form">
       <bpmn:incoming>Flow_0tj7fh8</bpmn:incoming>
       <bpmn:outgoing>Flow_0zd89f6</bpmn:outgoing>
     </bpmn:userTask>

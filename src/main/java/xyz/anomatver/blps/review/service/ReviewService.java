@@ -29,9 +29,9 @@ public class ReviewService {
     }
 
     @Transactional
-    public Review submitReview(Review review) {
+    public Review submitReview(Review review, String userIp, String userAgent) {
         validate(review);
-        checkForSpam(review);
+        checkForSpam(review, userIp, userAgent);
         return reviewRepository.save(review);
     }
 
@@ -78,8 +78,8 @@ public class ReviewService {
         return review.getContent() != null && !review.getContent().trim().isEmpty();
     }
 
-    public boolean checkForSpam(Review review) {
-        return spamDetectionService.isSpam(review, "test", "test");
+    public boolean checkForSpam(Review review, String userIp, String userAgent) {
+        return spamDetectionService.isSpam(review, userIp, userAgent);
     }
 
     public void setStatus(ReviewStatus status, Review review) {

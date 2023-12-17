@@ -30,9 +30,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String token = jwtTokenProvider.resolveToken(request);
-            if (token == null) {
 
-            }
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 String username = jwtTokenProvider.getUsername(token);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -45,7 +43,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             }
         } catch (Exception e) {
-            System.out.println(e);
+            // TODO: - Make meaningful switch
+            e.printStackTrace();
         }
 
         filterChain.doFilter(request, response);

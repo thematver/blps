@@ -3,6 +3,7 @@ package xyz.anomatver.blps.auth.service;
 
 import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,7 +32,8 @@ import java.util.stream.Collectors;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    String filePath = "users.xml";
+    @Value("${users.file.path}")
+    private String usersFilePath;
     File usersFile;
     ConcurrentHashMap<String, User> accounts;
     Lock fileLock;
@@ -78,7 +80,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private void initFile() {
 
-        File file = new File(filePath);
+        File file = new File(usersFilePath);
         try {
             file.createNewFile();
         } catch (IOException ex) {
