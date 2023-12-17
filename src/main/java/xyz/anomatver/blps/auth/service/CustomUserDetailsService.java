@@ -1,12 +1,9 @@
 package xyz.anomatver.blps.auth.service;
 
 
-import org.camunda.bpm.engine.IdentityService;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -56,7 +53,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             Set<GrantedAuthority> authorities = user
                     .getRoles()
                     .stream()
-                    .map((role) -> new SimpleGrantedAuthority("ROLE_" + role.toString())).collect(Collectors.toSet());
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toString())).collect(Collectors.toSet());
 
             return new org.springframework.security.core.userdetails.User(user.getUsername(),
                     user.getPassword(),
@@ -103,11 +100,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         File file = new File(usersFilePath);
         try {
-            file.createNewFile();
+            if (!file.createNewFile()) {
+                throw new RuntimeException();
+            }
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-        this.usersFile = file;
+
 
     }
 
@@ -127,18 +126,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private void dumpToXml() {
-        try {
+        try ( XMLEncoder encoder = new XMLEncoder(
+                new BufferedOutputStream(
+                        new FileOutputStream(usersFile)
+                )
+        ) ) {
             fileLock.lock();
-            XMLEncoder encoder = new XMLEncoder(
-                    new BufferedOutputStream(
-                            new FileOutputStream(usersFile)
-                    )
-            );
             encoder.writeObject(this.accounts);
-            encoder.close();
         } catch (FileNotFoundException ex) {
             logger.error("File not found while dumping to XML: {}", ex.getMessage());
-            throw new RuntimeException(ex);
         } finally {
             fileLock.unlock();
         }
@@ -146,24 +142,17 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private void loadFromXml() {
-        try {
-            XMLDecoder decoder = new XMLDecoder(
-                    new BufferedInputStream(
-                            new FileInputStream(usersFile)
-                    )
-            );
-
+        try (XMLDecoder decoder = new XMLDecoder(
+                new BufferedInputStream(
+                        new FileInputStream(usersFile)
+                )
+        )) {
             this.accounts = (ConcurrentHashMap<String, User>) decoder.readObject();
-
-
-            decoder.close();
         } catch (FileNotFoundException ex) {
             logger.error("File not found while loading from XML: {}", ex.getMessage());
-            throw new RuntimeException(ex);
         }
         catch (Exception e) {
             logger.error("Error occurred when loading from XML: {}", e.getMessage());
-            throw new RuntimeException(e);
         }
     }
 

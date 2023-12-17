@@ -2,18 +2,14 @@ package xyz.anomatver.blps.vote.processes;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Component;
 import xyz.anomatver.blps.auth.AuthJavaDelegate;
 import xyz.anomatver.blps.auth.model.ERole;
 import xyz.anomatver.blps.auth.service.CustomUserDetailsService;
-import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.user.model.User;
 import xyz.anomatver.blps.vote.model.Vote;
 import xyz.anomatver.blps.vote.service.VoteService;

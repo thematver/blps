@@ -1,7 +1,6 @@
 package xyz.anomatver.blps.vote.model;
 
 import lombok.*;
-import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.user.model.User;
 
 import javax.persistence.*;

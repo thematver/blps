@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xyz.anomatver.blps.auth.service.CustomUserDetailsService;
+import xyz.anomatver.blps.review.dto.ReviewResponse;
 import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.review.service.ReviewService;
 import xyz.anomatver.blps.user.model.User;
@@ -20,14 +21,18 @@ import java.util.List;
 @RequestMapping(value = "/vote", produces = "application/json")
 public class VoteController {
     private static final Logger logger = LoggerFactory.getLogger(VoteController.class);
-    @Autowired
-    private VoteService voteService;
 
-    @Autowired
-    private ReviewService reviewService;
+    final private VoteService voteService;
 
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
+    final private ReviewService reviewService;
+
+    final private CustomUserDetailsService userDetailsService;
+
+    public VoteController(VoteService voteService, ReviewService reviewService, CustomUserDetailsService userDetailsService) {
+        this.voteService = voteService;
+        this.reviewService = reviewService;
+        this.userDetailsService = userDetailsService;
+    }
 
     @GetMapping("/reviews")
     public ResponseEntity<List<Review>> getReviewsForModeration() {
@@ -42,19 +47,20 @@ public class VoteController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> vote(
+    public ResponseEntity<ReviewResponse> vote(
             @RequestBody VoteDTO voteDTO) {
         try {
             User user = userDetailsService.getUser();
             Review review = reviewService.findById(voteDTO.getReviewId());
             Review updatedReview = voteService.vote(user, review, voteDTO.getVoteType());
+
             if (review == updatedReview) {
-                return ResponseEntity.badRequest().body("Вы уже проголосовали за этот опрос.");
+                return ResponseEntity.badRequest().body(ReviewResponse.builder().error("Вы уже голосовали за этот комментарий").build());
             }
-            return ResponseEntity.ok(updatedReview);
+            return ResponseEntity.ok(ReviewResponse.builder().review(updatedReview).build());
         } catch (Exception ex) {
             logger.error("Error while voting: {}", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during vote");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ReviewResponse.builder().error("Ошибка при голосовании").build());
         }
     }
 }

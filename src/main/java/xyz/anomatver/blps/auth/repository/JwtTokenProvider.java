@@ -21,11 +21,14 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private final long validity = 300000000;
+    private static final long VALIDITY = 300000000;
     @Value("${JWT_SECRET}")
     private String secret;
-    @Autowired
     private UserDetailsService userDetailsService;
+
+    public JwtTokenProvider(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     public BCryptPasswordEncoder encoder() {
@@ -40,7 +43,7 @@ public class JwtTokenProvider {
     public String createToken(String login) {
         Claims claims = Jwts.claims().setSubject(login);
         Date now = new Date();
-        Date expiration = new Date(now.getTime() + this.validity);
+        Date expiration = new Date(now.getTime() + VALIDITY);
         return Jwts.builder().setClaims(claims).setIssuedAt(now).setExpiration(expiration).signWith(SignatureAlgorithm.HS256, secret).compact();
     }
 

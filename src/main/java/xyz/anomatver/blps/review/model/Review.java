@@ -38,7 +38,7 @@ public class Review {
     private ReviewStatus status;
 
     @OneToMany(cascade = {CascadeType.ALL})
-    private Set<Vote> votes = new HashSet<Vote>();
+    private Set<Vote> votes = new HashSet<>();
 
     @CreationTimestamp
     @Column(name = "created_at")

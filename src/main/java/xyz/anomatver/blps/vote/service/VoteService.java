@@ -3,6 +3,7 @@ package xyz.anomatver.blps.vote.service;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xyz.anomatver.blps.auth.model.ERole;
 import xyz.anomatver.blps.mqtt.MessageSenderService;
@@ -23,11 +24,15 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class VoteService {
     private static final Logger logger = LoggerFactory.getLogger(VoteService.class);
-    private final VoteRepository voteRepository;
-    private final UserRepository userRepository;
-    private final ReviewRepository reviewRepository;
-    private final MessageSenderService messageSenderService;
-    private final ReviewService reviewService;
+    @Autowired
+    private VoteRepository voteRepository;
+    @Autowired
+    private  UserRepository userRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
+    @Autowired
+    private ReviewService reviewService;
+
 
     public Review vote(User moderator, Review review, Vote.VoteType type) {
         try {
@@ -63,9 +68,7 @@ public class VoteService {
 
     public boolean hasTotalMajorityOfVotes(Long reviewId) {
         Review review = reviewService.findById(reviewId);
-        long totalVotes = review.getVotes().size();
         long positiveVotes = review.getVotes().stream().filter(vote -> vote.getVoteType() == Vote.VoteType.POSITIVE).count();
-        long negativeVotes = totalVotes - positiveVotes;
 
         long majority = userRepository.countUsersByRolesContains(ERole.MODERATOR);
 

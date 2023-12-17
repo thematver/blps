@@ -11,4 +11,6 @@ import java.util.List;
 public class UserResponse {
     private String username;
     private List<Review> reviews;
+
+    private String error;
 }

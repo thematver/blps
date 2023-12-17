@@ -10,7 +10,9 @@ import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.user.dto.UserResponse;
 import xyz.anomatver.blps.user.model.User;
 import xyz.anomatver.blps.user.service.UserService;
+import xyz.anomatver.blps.vote.dto.LinkResponse;
 
+import javax.ws.rs.core.Link;
 import java.util.List;
 
 @RestController
@@ -27,7 +29,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         try {
             User user = userService.findById(id);
             String username = user.getUsername();
@@ -41,7 +43,10 @@ public class UserController {
             return ResponseEntity.ok().body(response);
         }  catch (Exception ex) {
             logger.error("Error while fetching user by ID: {}", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching user by ID");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UserResponse
+                    .builder()
+                            .error("Error when fetching user")
+                    .build());
         }
     }
 
@@ -49,17 +54,17 @@ public class UserController {
 
 
     @GetMapping("/link")
-    public ResponseEntity<?> link(
+    public ResponseEntity<LinkResponse> link(
             @RequestParam String hash
     ) {
         try {
             User currentUser = userDetailsService.getUser();
             User updatedUser = userService.link(currentUser, hash);
 
-            return ResponseEntity.ok().body("UUID linked successfully for user: " + updatedUser.getUsername());
+            return ResponseEntity.ok().body(LinkResponse.builder().message("UUID linked successfully for user: " + updatedUser.getUsername()).build());
         } catch (Exception ex) {
             logger.error("Error while linking UUID: {}", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error linking UUID");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(LinkResponse.builder().message("Error linking UUID").build());
         }
     }
 

@@ -77,7 +77,7 @@ public class AuthService {
 
     @Transactional
     public String register(SignUpDTO signUpDto) {
-        if (userRepository.existsByUsername(signUpDto.getUsername())) {
+        if (Boolean.TRUE.equals(userRepository.existsByUsername(signUpDto.getUsername()))) {
             logger.warn("Username '{}' is already taken.", signUpDto.getUsername());
             throw new UsernameAlreadyTakenException("Выбранное имя пользователя уже занято.");
         }

@@ -39,7 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody SignUpDTO signUpDto) {
+    public ResponseEntity<AuthResponse> registerUser(@RequestBody SignUpDTO signUpDto) {
         logger.info("Received signup request for user: {}", signUpDto.getUsername());
 
         try {

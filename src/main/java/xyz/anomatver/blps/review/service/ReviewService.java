@@ -22,12 +22,10 @@ public class ReviewService {
     private final SpamDetectionService spamDetectionService;
     private final ReviewRepository reviewRepository;
 
-    private final MessageSenderService messageSenderService;
 
-    public ReviewService(SpamDetectionService spamDetectionService, ReviewRepository reviewRepository, MessageSenderService messageSenderService) {
+    public ReviewService(SpamDetectionService spamDetectionService, ReviewRepository reviewRepository) {
         this.spamDetectionService = spamDetectionService;
         this.reviewRepository = reviewRepository;
-        this.messageSenderService = messageSenderService;
     }
 
     @Transactional
@@ -47,7 +45,7 @@ public class ReviewService {
             return validateReviewContent(review);
         } catch (Exception ex) {
             logger.error("Error while validating review: {}", ex.getMessage());
-            throw ex;
+            return false;
         }
     }
 

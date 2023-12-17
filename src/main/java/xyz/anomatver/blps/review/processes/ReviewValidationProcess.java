@@ -11,9 +11,6 @@ import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.review.model.ReviewStatus;
 import xyz.anomatver.blps.review.service.ReviewService;
 
-import java.util.Date;
-import java.util.List;
-
 
 @Component
 public class ReviewValidationProcess extends AuthJavaDelegate {

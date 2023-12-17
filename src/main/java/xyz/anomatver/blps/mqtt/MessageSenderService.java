@@ -30,8 +30,8 @@ public class MessageSenderService {
 
     private void sendMessage(String topic, String payload) {
 
-        try {
-            MqttClient sampleClient = new MqttClient(brokerUrl, clientId);
+        try (MqttClient sampleClient = new MqttClient(brokerUrl, clientId)) {
+
 
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setUserName(mqttUsername);

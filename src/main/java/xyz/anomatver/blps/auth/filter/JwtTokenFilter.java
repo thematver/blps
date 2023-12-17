@@ -1,7 +1,7 @@
 package xyz.anomatver.blps.auth.filter;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,6 +9,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 import xyz.anomatver.blps.auth.repository.JwtTokenProvider;
 import xyz.anomatver.blps.auth.service.CustomUserDetailsService;
+import xyz.anomatver.blps.vote.controller.VoteController;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -19,6 +20,9 @@ import java.util.List;
 
 
 public class JwtTokenFilter extends OncePerRequestFilter {
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(VoteController.class);
+
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -43,8 +47,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             }
         } catch (Exception e) {
-            // TODO: - Make meaningful switch
-            e.printStackTrace();
+           logger.error("Error ocurred when filtering request" + e.getMessage());
         }
 
         filterChain.doFilter(request, response);

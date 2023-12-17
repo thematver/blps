@@ -9,7 +9,7 @@ import lombok.Getter;
 @Builder
 public class AuthResponse {
 
-    private final String type = "Bearer";
+    private static final String type = "Bearer";
     private String accessToken;
     private String refreshToken;
     private String error;
