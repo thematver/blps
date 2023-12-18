@@ -1,48 +1,29 @@
-import com.pengrad.telegrambot.model.User;
-
 import java.sql.*;
-import java.util.UUID;  // To generate a unique hash
-
-
-enum  UserState {
-    INITIAL,
-    HAS_UUID,
-    AUTHORIZED,
-    BLOCKED,
-}
-
-class UserStateResult {
-    private UserState userState;
-    private String uuid;
-
-    public UserStateResult(UserState userState, String uuid) {
-        this.userState = userState;
-        this.uuid = uuid;
-    }
-
-    public UserState getUserState() {
-        return userState;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-}
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SQLHelper {
-
-    private static final String DB_URL = "jdbc:postgresql://localhost:5432/blps_bot";
+    private static final String DB_URL = System.getenv("YOUR_ENV_VARIABLE_NAME");
+    private static final String POSTGRES_DRIVER = "org.postgresql.Driver";
+    private static final Logger LOGGER = Logger.getLogger(SQLHelper.class.getName());
 
     static {
+        loadPostgresDriver();
+    }
+
+    private static void loadPostgresDriver() {
         try {
-            Class.forName("org.postgresql.Driver");
+            Class.forName(POSTGRES_DRIVER);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "PostgreSQL Driver not found", e);
+            throw new RuntimeException("PostgreSQL Driver not found", e);
         }
     }
 
-    public static Connection getConnection() throws Exception {
+    public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(DB_URL);
     }
 
@@ -57,44 +38,40 @@ public class SQLHelper {
                 String springId = rs.getString("spring_id");
                 String uniqueHash = rs.getString("uniquehash");
 
-                if (springId != null && !springId.isEmpty()) {
+                if (!springId.isEmpty()) {
                     return new UserStateResult(UserState.AUTHORIZED, null);
-                } else if (uniqueHash != null && !uniqueHash.isEmpty()) {
+                } else if (!uniqueHash.isEmpty()) {
                     return new UserStateResult(UserState.HAS_UUID, uniqueHash);
                 } else {
                     return new UserStateResult(UserState.INITIAL, null);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            handleSQLException(e);
         }
         return new UserStateResult(UserState.INITIAL, null);
     }
 
-
-
-    // Overloaded addUser
-    public static String addUser(String telegramId) {
-        String sql = "INSERT INTO moderators (telegram_id, uniquehash) VALUES (?, ?)";
-        String uniqueHash = UUID.randomUUID().toString();
+    public static List<String> getUserIds() {
+        List<String> telegramIds = new ArrayList<>();
+        String sql = "SELECT telegram_id FROM moderators";
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            conn.setAutoCommit(false);
-            pstmt.setString(1, telegramId);
-            pstmt.setString(2, uniqueHash);  // Generating a unique hash
-            int rowsAffected = pstmt.executeUpdate();
-            conn.commit();
-            return uniqueHash;
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                telegramIds.add(rs.getString("telegram_id"));
+            }
+
+        } catch (SQLException e) {
+            handleSQLException(e);
         }
-        return "";
+        return telegramIds;
     }
 
     public static String addUser(String springId, String uniqueHash) {
         String telegramId = null;
-
-        // First, fetch the Telegram ID using uniqueHash
         String fetchSql = "SELECT telegram_id FROM moderators WHERE uniquehash = ?";
         try (Connection conn = getConnection();
              PreparedStatement fetchStmt = conn.prepareStatement(fetchSql)) {
@@ -103,27 +80,50 @@ public class SQLHelper {
             if (rs.next()) {
                 telegramId = rs.getString("telegram_id");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            handleSQLException(e);
         }
-
-        // Now, update the entry
         String updateSql = "UPDATE moderators SET spring_id = ?, uniquehash = NULL WHERE uniquehash = ?";
         try (Connection conn = getConnection();
              PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
-            conn.setAutoCommit(false);
             updateStmt.setString(1, springId);
             updateStmt.setString(2, uniqueHash);
             int rowsAffected = updateStmt.executeUpdate();
-            conn.commit();
             if (rowsAffected > 0) {
-                return telegramId;  // Return the fetched Telegram ID
+                LOGGER.log(Level.INFO, "User updated with springId: {}", springId);
+                return telegramId;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            handleSQLException(e);
         }
-        return null;  // Return null if the operation failed or the Telegram ID wasn't found
+        return null;
     }
 
 
+    public static String addUser(String telegramId) {
+        String sql = "INSERT INTO moderators (telegram_id, uniquehash) VALUES (?, ?)";
+        String uniqueHash = generateUniqueHash();
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, telegramId);
+            pstmt.setString(2, uniqueHash);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                LOGGER.log(Level.INFO, "User added with ID: {} ", telegramId);
+                return uniqueHash;
+            }
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+        return "";
+    }
+
+    private static String generateUniqueHash() {
+        return UUID.randomUUID().toString();
+    }
+
+    private static void handleSQLException(SQLException e) {
+        LOGGER.log(Level.SEVERE, "SQL Exception occurred", e);
+        throw new RuntimeException("SQL Exception occurred", e);
+    }
 }
