@@ -16,12 +16,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(VoteController.class);
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(JwtTokenFilter.class);
 
 
     @Autowired
@@ -47,7 +46,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             }
         } catch (Exception e) {
-           logger.error("Error ocurred when filtering request" + e.getMessage());
+           LOGGER.error("Error occurred when filtering request: {}", e.getMessage());
         }
 
         filterChain.doFilter(request, response);

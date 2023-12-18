@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import xyz.anomatver.blps.exception.NotFoundException;
-import xyz.anomatver.blps.mqtt.MessageSenderService;
 import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.review.model.ReviewStatus;
 import xyz.anomatver.blps.review.repository.ReviewRepository;

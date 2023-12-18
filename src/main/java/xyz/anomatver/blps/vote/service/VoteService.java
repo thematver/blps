@@ -6,19 +6,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xyz.anomatver.blps.auth.model.ERole;
-import xyz.anomatver.blps.mqtt.MessageSenderService;
 import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.review.model.ReviewStatus;
 import xyz.anomatver.blps.review.repository.ReviewRepository;
 import xyz.anomatver.blps.review.service.ReviewService;
 import xyz.anomatver.blps.user.model.User;
 import xyz.anomatver.blps.user.repository.UserRepository;
+import xyz.anomatver.blps.vote.error.ReviewProcessException;
+import xyz.anomatver.blps.vote.error.VoteNotFoundException;
 import xyz.anomatver.blps.vote.model.Vote;
 import xyz.anomatver.blps.vote.repository.VoteRepository;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,27 +37,28 @@ public class VoteService {
     public Review vote(User moderator, Review review, Vote.VoteType type) {
         try {
             addVoteIfNotPresent(moderator, review, type);
-
             determineReviewStatus(review, type);
-
             return reviewRepository.save(review);
         } catch (Exception ex) {
             logger.error("Error while processing vote: {}", ex.getMessage());
-            throw ex;
+            throw new ReviewProcessException("Error processing the vote for the review.");
         }
     }
 
     public void vote(User moderator, Long reviewId, Vote.VoteType type) {
         try {
             Review review = reviewService.findById(reviewId);
+            if (review == null) {
+                throw new VoteNotFoundException("Review not found for id: " + reviewId);
+            }
             addVoteIfNotPresent(moderator, review, type);
             reviewRepository.save(review);
-        }  catch (Exception ex) {
+        } catch (Exception ex) {
             logger.error("Error while voting for a review: {}", ex.getMessage());
-            throw ex;
+            throw new ReviewProcessException("Error occurred during voting for the review.");
         }
-
     }
+
 
 
     public boolean shouldSkipDecision(Long reviewId) {
@@ -123,7 +124,6 @@ public class VoteService {
             return review.getVotes().stream().noneMatch(vote -> Objects.equals(vote.getUser().getId(), user.getId()));
         } catch (Exception ex) {
             logger.error("Error while checking if user has voted: {}", ex.getMessage());
-            throw ex;
         }
     }
 }

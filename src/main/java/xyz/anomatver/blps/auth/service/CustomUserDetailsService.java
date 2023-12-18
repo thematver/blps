@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import xyz.anomatver.blps.auth.errors.UserFileCreatingException;
 import xyz.anomatver.blps.user.model.User;
 import xyz.anomatver.blps.user.repository.UserRepository;
 
@@ -63,7 +64,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             logger.error("User not found with username: {}", username);
             throw ex;
         } catch (Exception e) {
-            logger.error("An error occurred while loading user by username: {}", e.getMessage());
+            logger.error("Can't load user by username: {}", username);
             throw e;
         }
     }
@@ -101,10 +102,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         File file = new File(usersFilePath);
         try {
             if (!file.createNewFile()) {
-                throw new RuntimeException();
+                throw new UserFileCreatingException();
             }
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+        } catch (UserFileCreatingException ex) {
+            logger.error("User file hasn't been created: {}", ex.getMessage());
+        } catch (IOException e) {
+           logger.error("Can't create user file: {}", e.getMessage());
         }
 
 

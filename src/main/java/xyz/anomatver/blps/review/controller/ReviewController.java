@@ -11,13 +11,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import xyz.anomatver.blps.auth.service.CustomUserDetailsService;
 import xyz.anomatver.blps.review.dto.CreateReviewDTO;
 import xyz.anomatver.blps.review.dto.ReviewResponse;
+import xyz.anomatver.blps.review.dto.ReviewsResponse;
 import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.review.model.ReviewStatus;
 import xyz.anomatver.blps.review.service.ReviewService;
 import xyz.anomatver.blps.user.model.User;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,10 +51,10 @@ public class ReviewController {
                     .build();
             reviewService.submitReview(review, userIp, userAgent);
             logger.info("Review submitted successfully");
-            return new ResponseEntity(ReviewResponse.builder().review(review).build(), HttpStatus.CREATED);
+            return new ResponseEntity<>(ReviewResponse.builder().review(review).build(), HttpStatus.CREATED);
         } catch (Exception ex) {
             logger.error("Failed to submit review: {}", ex.getMessage());
-            return new ResponseEntity(ReviewResponse.builder().error("Failed to submit review").build(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ReviewResponse.builder().error("Failed to submit review").build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -75,22 +75,22 @@ public class ReviewController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Review>> getAllReviews() {
+    public ResponseEntity<ReviewsResponse> getAllReviews() {
         try {
             List<Review> reviews = reviewService.findAll().stream()
                     .filter(review -> review.getStatus() == ReviewStatus.APPROVED)
                     .collect(Collectors.toList());
-            return ResponseEntity.ok(reviews);
+            return ResponseEntity.ok(ReviewsResponse.builder().reviews(reviews).build());
         } catch (Exception ex) {
             logger.error("Error occurred while fetching reviews: {}", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(List.of());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ReviewsResponse.builder().error("Error occurred when fetching reviews").build());
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ReviewResponse> updateReview(@PathVariable Long id, @RequestBody Review reviewDTO) {
+    public ResponseEntity<ReviewResponse> updateReview(@PathVariable Long id, @RequestBody CreateReviewDTO reviewDTO) {
         try {
-            Review updatedReview = reviewService.updateReview(id, reviewDTO);
+            Review updatedReview = reviewService.updateReview(id, Review.builder().title(reviewDTO.getTitle()).content(reviewDTO.getContent()).build());
             return ResponseEntity.ok(ReviewResponse.builder().review(updatedReview).build());
         } catch (Exception ex) {
             logger.error("Failed to update review: {}", ex.getMessage());

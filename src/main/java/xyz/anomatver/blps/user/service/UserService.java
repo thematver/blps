@@ -43,7 +43,7 @@ public class UserService {
             return reviewRepository.getReviewsByAuthor(user).stream().filter(review -> review.getStatus() == ReviewStatus.APPROVED).toList();
         } catch (Exception ex) {
             logger.error("Error while fetching approved reviews: {}", ex.getMessage());
-            throw ex;
+            return List.of();
         }
     }
 

@@ -12,7 +12,6 @@ import xyz.anomatver.blps.user.model.User;
 import xyz.anomatver.blps.user.service.UserService;
 import xyz.anomatver.blps.vote.dto.LinkResponse;
 
-import javax.ws.rs.core.Link;
 import java.util.List;
 
 @RestController
@@ -49,8 +48,6 @@ public class UserController {
                     .build());
         }
     }
-
-
 
 
     @GetMapping("/link")

@@ -48,7 +48,6 @@ public class MessageSenderService {
             sampleClient.disconnect();
         } catch (MqttException me) {
             logger.error("Error occurred while sending MQTT message: {}", me.getMessage());
-            throw new RuntimeException(me);
         }
     }
 

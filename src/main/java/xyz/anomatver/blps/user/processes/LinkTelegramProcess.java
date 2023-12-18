@@ -1,7 +1,6 @@
 package xyz.anomatver.blps.user.processes;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import xyz.anomatver.blps.auth.AuthJavaDelegate;
 import xyz.anomatver.blps.auth.service.CustomUserDetailsService;
