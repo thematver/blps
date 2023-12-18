@@ -1,7 +1,6 @@
 package xyz.anomatver.blps.auth.filter;
 
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,7 +8,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 import xyz.anomatver.blps.auth.repository.JwtTokenProvider;
 import xyz.anomatver.blps.auth.service.CustomUserDetailsService;
-import xyz.anomatver.blps.vote.controller.VoteController;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -23,11 +21,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(JwtTokenFilter.class);
 
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
+
+    public JwtTokenFilter(JwtTokenProvider jwtTokenProvider, CustomUserDetailsService userDetailsService) {
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

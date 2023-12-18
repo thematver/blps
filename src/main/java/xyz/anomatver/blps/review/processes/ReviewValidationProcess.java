@@ -3,9 +3,9 @@ package xyz.anomatver.blps.review.processes;
 
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import xyz.anomatver.blps.auth.AuthJavaDelegate;
+import xyz.anomatver.blps.auth.service.AuthService;
 import xyz.anomatver.blps.auth.service.CustomUserDetailsService;
 import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.review.model.ReviewStatus;
@@ -18,8 +18,9 @@ public class ReviewValidationProcess extends AuthJavaDelegate {
     private final ReviewService reviewService;
 
     private final CustomUserDetailsService userDetailsService;
-    @Autowired
-    public ReviewValidationProcess(ReviewService reviewService, CustomUserDetailsService userService) {
+
+    public ReviewValidationProcess(AuthService authService, ReviewService reviewService, CustomUserDetailsService userService) {
+        super(authService);
         this.reviewService = reviewService;
         this.userDetailsService = userService;
     }

@@ -3,6 +3,7 @@ package xyz.anomatver.blps.user.processes;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.springframework.stereotype.Component;
 import xyz.anomatver.blps.auth.AuthJavaDelegate;
+import xyz.anomatver.blps.auth.service.AuthService;
 import xyz.anomatver.blps.auth.service.CustomUserDetailsService;
 import xyz.anomatver.blps.user.model.User;
 import xyz.anomatver.blps.user.service.UserService;
@@ -15,7 +16,8 @@ public class LinkTelegramProcess extends AuthJavaDelegate {
 
     private final CustomUserDetailsService userDetailsService;
 
-    public LinkTelegramProcess(UserService userService, CustomUserDetailsService userDetailsService) {
+    public LinkTelegramProcess(AuthService authService, UserService userService, CustomUserDetailsService userDetailsService) {
+        super(authService);
         this.userService = userService;
         this.userDetailsService = userDetailsService;
     }

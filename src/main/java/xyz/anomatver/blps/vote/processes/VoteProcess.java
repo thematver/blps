@@ -4,11 +4,11 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import xyz.anomatver.blps.auth.AuthJavaDelegate;
 import xyz.anomatver.blps.auth.model.ERole;
+import xyz.anomatver.blps.auth.service.AuthService;
 import xyz.anomatver.blps.auth.service.CustomUserDetailsService;
 import xyz.anomatver.blps.user.model.User;
 import xyz.anomatver.blps.vote.model.Vote;
@@ -41,8 +41,9 @@ public class VoteProcess extends AuthJavaDelegate {
         execution.setVariable("reviewId", Long.valueOf(reviewId));
     }
 
-    @Autowired
-    public VoteProcess(VoteService voteService, CustomUserDetailsService userDetailsService) {
+
+    public VoteProcess(AuthService authService, VoteService voteService, CustomUserDetailsService userDetailsService) {
+        super(authService);
         this.voteService = voteService;
         this.userDetailsService = userDetailsService;
     }

@@ -2,7 +2,6 @@ package xyz.anomatver.blps.review.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +29,6 @@ public class ReviewController {
     private final ReviewService reviewService;
     private final CustomUserDetailsService userDetailsService;
 
-    @Autowired
     public ReviewController(ReviewService reviewService, CustomUserDetailsService userDetailsService) {
         this.reviewService = reviewService;
         this.userDetailsService = userDetailsService;

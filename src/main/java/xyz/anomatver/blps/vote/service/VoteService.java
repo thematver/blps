@@ -3,7 +3,6 @@ package xyz.anomatver.blps.vote.service;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xyz.anomatver.blps.auth.model.ERole;
 import xyz.anomatver.blps.review.model.Review;
@@ -24,14 +23,18 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class VoteService {
     private static final Logger logger = LoggerFactory.getLogger(VoteService.class);
-    @Autowired
+
     private VoteRepository voteRepository;
-    @Autowired
     private  UserRepository userRepository;
-    @Autowired
     private ReviewRepository reviewRepository;
-    @Autowired
     private ReviewService reviewService;
+
+    public VoteService(VoteRepository voteRepository, UserRepository userRepository, ReviewRepository reviewRepository, ReviewService reviewService) {
+        this.voteRepository = voteRepository;
+        this.userRepository = userRepository;
+        this.reviewRepository = reviewRepository;
+        this.reviewService = reviewService;
+    }
 
 
     public Review vote(User moderator, Review review, Vote.VoteType type) {
@@ -124,6 +127,7 @@ public class VoteService {
             return review.getVotes().stream().noneMatch(vote -> Objects.equals(vote.getUser().getId(), user.getId()));
         } catch (Exception ex) {
             logger.error("Error while checking if user has voted: {}", ex.getMessage());
+            throw ex;
         }
     }
 }

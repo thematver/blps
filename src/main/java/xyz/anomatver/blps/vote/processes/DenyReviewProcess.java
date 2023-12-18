@@ -5,6 +5,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 import org.springframework.stereotype.Component;
 import xyz.anomatver.blps.auth.AuthJavaDelegate;
+import xyz.anomatver.blps.auth.service.AuthService;
 import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.review.model.ReviewStatus;
 import xyz.anomatver.blps.review.service.ReviewService;
@@ -15,7 +16,8 @@ public class DenyReviewProcess extends AuthJavaDelegate {
 
     private final ReviewService reviewService;
 
-    public DenyReviewProcess(ReviewService reviewService) {
+    public DenyReviewProcess(AuthService authService, ReviewService reviewService) {
+        super(authService);
         this.reviewService = reviewService;
     }
 

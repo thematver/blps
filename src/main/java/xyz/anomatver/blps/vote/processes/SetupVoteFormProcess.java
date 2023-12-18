@@ -5,11 +5,11 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import xyz.anomatver.blps.auth.AuthJavaDelegate;
 import xyz.anomatver.blps.auth.model.ERole;
+import xyz.anomatver.blps.auth.service.AuthService;
 import xyz.anomatver.blps.auth.service.CustomUserDetailsService;
 import xyz.anomatver.blps.review.model.Review;
 import xyz.anomatver.blps.user.model.User;
@@ -45,8 +45,8 @@ public class SetupVoteFormProcess extends AuthJavaDelegate {
         }
         execution.setVariable("reviews_form_input", buildReviews());
     }
-    @Autowired
-    public SetupVoteFormProcess(VoteService voteService, CustomUserDetailsService userDetailsService) {
+    public SetupVoteFormProcess(AuthService authService, VoteService voteService, CustomUserDetailsService userDetailsService) {
+        super(authService);
         this.voteService = voteService;
         this.userDetailsService = userDetailsService;
     }
